@@ -9,7 +9,7 @@ import (
 	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
-func  handler (w http.ResponseWriter, r *http.Request) { 
+func homeRoute (w http.ResponseWriter, r *http.Request) { 
 	fmt.Fprintf(w, "Olá, aplicação Go em Docker!" ) 
 } 
 
@@ -27,7 +27,7 @@ func  main () {
         log.Println("Warning: New Relic application did not connect:", err)
     }
 
-	http.HandleFunc( "/" , handler) 
+	http.HandleFunc( "/" , homeRoute) 
 	fmt.Println( "O servidor está rodando na porta 8080" ) 
 	http.ListenAndServe( ":8080" , nil ) 
 }
