@@ -7,6 +7,8 @@ import (
 	"os"
 	"time"
 	"github.com/newrelic/go-agent/v3/newrelic"
+    "github.com/gin-gonic/gin"
+    "projeto_go/routes"
 )
 
 func homeRoute (w http.ResponseWriter, r *http.Request) { 
@@ -27,7 +29,15 @@ func  main () {
         log.Println("Warning: New Relic application did not connect:", err)
     }
 
-	http.HandleFunc( "/" , homeRoute) 
+	// Gin
+	r := gin.New()
+
+	// Middlewares básicos
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+
+    routes.SetupRoutes(r)
+
 	fmt.Println( "O servidor está rodando na porta 8080" ) 
-	http.ListenAndServe( ":8080" , nil ) 
+	r.Run(":8080")
 }
