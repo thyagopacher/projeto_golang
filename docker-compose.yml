@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   app:
+    container_name: app-go
     build: .
     ports:
       - "8080:8080"
