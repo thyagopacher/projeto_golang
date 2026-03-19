@@ -10,6 +10,8 @@ require github.com/newrelic/go-agent/v3/integrations/nrgin v1.0.0
 
 require github.com/gin-gonic/gin v1.8.1
 
+require github.com/SebastiaanKlippert/go-wkhtmltopdf v1.9.0
+
 require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
