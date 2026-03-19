@@ -1,97 +1,110 @@
 package controllers
 
 import (
-	"net/http"
 	"strconv"
-
+	"projeto_go/internal/models"
 	"github.com/gin-gonic/gin"
-	"projeto_go/services"
+	"projeto_go/internal/services"
 )
 
-type UsuarioController struct {
-	service *services.UsuarioService
+type ProdutoController struct {
+	service *services.ProdutoService
 }
 
-var nextID = 3
-
-/**
-* GET /usuarios
-*/
-func (uc *UsuarioController) GetUsuarios(c *gin.Context) {
-	c.JSON(200, uc.service.GetUsuarios())
+func NewProdutoController(service *services.ProdutoService) *ProdutoController {
+	return &ProdutoController{
+		service: service,
+	}
 }
 
 /**
-* GET /usuarios/:id
+* GET /Produtos
 */
-func (uc *UsuarioController) GetUsuarioByID(c *gin.Context) {
+func (uc *ProdutoController) GetProdutos(c *gin.Context) {
+    produtos, err := uc.service.GetProdutos()
+    if err != nil {
+        c.JSON(500, gin.H{
+            "error": "Erro ao buscar produtos",
+            "details": err.Error(),
+        })
+        return
+    }
+    
+    c.JSON(200, produtos)
+}
+
+/**
+* GET /Produtos/:id
+*/
+func (uc *ProdutoController) GetProdutoByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(400, gin.H{"error": "ID inválido"})
 		return
 	}
 
-	usuario, err := uc.service.GetUsuarioByID(id)
+	Produto, err := uc.service.GetByID(id)
 	if err != nil {
 		c.JSON(404, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, usuario)
+	c.JSON(200, Produto)
 }
 
 /**
-* POST /usuarios
+* POST /Produtos
 */
-func (uc *UsuarioController) CreateUsuario(c *gin.Context) {
-	var input models.Usuario
+func (uc *ProdutoController) CreateProduto(c *gin.Context) {
+	var input models.Produto
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(400, gin.H{"error": "JSON inválido"})
 		return
 	}
 
-	usuario, err := uc.service.CreateUsuario(input)
+	Produto, err := uc.service.CreateProduto(input)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(201, usuario)
+	c.JSON(201, Produto)
 }
 
 /**
-* PUT /usuarios/:id
+* PUT /Produtos/:id
 */
-func (uc *UsuarioController) UpdateUsuario(c *gin.Context) {
+func (uc *ProdutoController) UpdateProduto(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
-	var input models.Usuario
+	var input models.Produto
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(400, gin.H{"error": "JSON inválido"})
 		return
 	}
 
-	usuario, err := uc.service.UpdateUsuario(id, input)
+	Produto, err := uc.service.UpdateProduto(id, input)
 	if err != nil {
 		c.JSON(404, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, usuario)
+	c.JSON(200, Produto)
 }
 
 /**
-* DELETE /usuarios/:id
+* DELETE /Produtos/:id
 */
-func (uc *UsuarioController) DeleteUsuario(c *gin.Context) {
+func (uc *ProdutoController) DeleteProduto(c *gin.Context) {
+
 	id, _ := strconv.Atoi(c.Param("id"))
 
-	err := uc.service.DeleteUsuario(id)
+	status, err := uc.service.DeleteProduto(id)
 	if err != nil {
 		c.JSON(404, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "Usuário removido"})
+	c.JSON(200, gin.H{"message": "Produto removido", "success": status})
 }

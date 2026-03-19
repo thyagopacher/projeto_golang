@@ -11,24 +11,24 @@ import (
 )
 
 const (
-	collectionName = "usuarios" // nome da coleção no MongoDB
+	collectionNameProdutos = "Produtos" // nome da coleção no MongoDB
 )
 
-// UsuarioRepository implementa CRUD no MongoDB
-type UsuarioRepository struct {
+// ProdutoRepository implementa CRUD no MongoDB
+type ProdutoRepository struct {
 	collection *mongo.Collection
 }
 
-// NewUsuarioRepository cria o repositório usando a conexão global do database
-func NewUsuarioRepository() *UsuarioRepository {
+// NewProdutoRepository cria o repositório usando a conexão global do database
+func NewProdutoRepository() *ProdutoRepository {
 	// Usa o DB global que você conectou em database.ConnectMongo
-	return &UsuarioRepository{
-		collection: database.DB.Collection(collectionName),
+	return &ProdutoRepository{
+		collection: database.DB.Collection(collectionNameProdutos),
 	}
 }
 
 // GetAll - Listar todos os usuários
-func (r *UsuarioRepository) GetAll() ([]models.Usuario, error) {
+func (r *ProdutoRepository) GetAll() ([]models.Produto, error) {
 	ctx := context.Background() // ou context.TODO() / WithTimeout em prod
 
 	cursor, err := r.collection.Find(ctx, bson.D{})
@@ -37,31 +37,31 @@ func (r *UsuarioRepository) GetAll() ([]models.Usuario, error) {
 	}
 	defer cursor.Close(ctx)
 
-	var usuarios []models.Usuario
-	if err = cursor.All(ctx, &usuarios); err != nil {
+	var Produtos []models.Produto
+	if err = cursor.All(ctx, &Produtos); err != nil {
 		return nil, err
 	}
 
-	return usuarios, nil
+	return Produtos, nil
 }
 
 // GetByID - Buscar por ID (recebe int)
-func (r *UsuarioRepository) GetByID(id int) (models.Usuario, error) {
+func (r *ProdutoRepository) GetByID(id int) (models.Produto, error) {
 	ctx := context.Background()
 
-	var usuario models.Usuario
-	err := r.collection.FindOne(ctx, bson.M{"id": id}).Decode(&usuario)
+	var Produto models.Produto
+	err := r.collection.FindOne(ctx, bson.M{"id": id}).Decode(&Produto)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return models.Usuario{}, nil // não encontrado
+			return models.Produto{}, nil // não encontrado
 		}
-		return models.Usuario{}, err
+		return models.Produto{}, err
 	}
-	return usuario, nil
+	return Produto, nil
 }
 
 // Create - Criar novo usuário (gera ID automaticamente)
-func (r *UsuarioRepository) Create(usuario models.Usuario) (models.Usuario, error) {
+func (r *ProdutoRepository) Create(Produto models.Produto) (models.Produto, error) {
 	ctx := context.Background()
 
 	// Lógica de auto-increment simples (não concorrência-safe – veja abaixo para versão segura)
@@ -72,7 +72,7 @@ func (r *UsuarioRepository) Create(usuario models.Usuario) (models.Usuario, erro
 		options.FindOne().SetSort(bson.M{"id": -1}),
 	).Decode(&maxDoc)
 	if err != nil && err != mongo.ErrNoDocuments {
-		return models.Usuario{}, err
+		return models.Produto{}, err
 	}
 
 	nextID := 1
@@ -80,51 +80,54 @@ func (r *UsuarioRepository) Create(usuario models.Usuario) (models.Usuario, erro
 		nextID = int(maxDoc["id"].(int32)) + 1 // ou int64 se for grande
 	}
 
-	usuario.ID = nextID
-	now := time.Now()
-	usuario.DataCriacao = now
-	usuario.DataAtualizacao = now
-	usuario.Ativo = true
+	Produto.ID = nextID
 
-	_, err = r.collection.InsertOne(ctx, usuario)
+	Produto.DataCriacao = time.Now()
+	Produto.DataAtualizacao = time.Now()
+	Produto.Ativo = true
+	Produto.Foto = "123" // valor padrão, pode ser modificado depois
+	Produto.Preco = 0.0
+
+	_, err = r.collection.InsertOne(ctx, Produto)
 	if err != nil {
-		return models.Usuario{}, err
+		return models.Produto{}, err
 	}
 
-	return usuario, nil
+	return Produto, nil
 }
 
 // Update - Atualizar usuário existente
-func (r *UsuarioRepository) Update(id int, usuario models.Usuario) (models.Usuario, error) {
+func (r *ProdutoRepository) Update(id int, Produto models.Produto) (models.Produto, error) {
 	ctx := context.Background()
 
 	// Atualiza apenas os campos permitidos (não mexe no id)
 	update := bson.M{
 		"$set": bson.M{
-			"nome":             usuario.Nome,
-			"email":            usuario.Email,
-			"ativo":            usuario.Ativo,
+			"nome":             Produto.Nome,
+			"ativo":            Produto.Ativo,
+			"preco":            Produto.Preco,
+			"foto":             Produto.Foto,
 			"data_atualizacao": time.Now(), // sempre atualiza a data de modificação
 		},
 	}
 
-	var updated models.Usuario
+	var updated models.Produto
 	opts := options.FindOneAndUpdate().
 		SetReturnDocument(options.After) // retorna o documento após update
 
 	err := r.collection.FindOneAndUpdate(ctx, bson.M{"id": id}, update, opts).Decode(&updated)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return models.Usuario{}, nil
+			return models.Produto{}, nil
 		}
-		return models.Usuario{}, err
+		return models.Produto{}, err
 	}
 
 	return updated, nil
 }
 
 // Delete - Deletar por ID
-func (r *UsuarioRepository) Delete(id int) (bool, error) {
+func (r *ProdutoRepository) Delete(id int) (bool, error) {
 	ctx := context.Background()
 
 	result, err := r.collection.DeleteOne(ctx, bson.M{"_id": id})

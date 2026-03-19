@@ -2,12 +2,12 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"projeto_go/controllers"
+	"projeto_go/internal/controllers"
 )
 
-func SetupFaturaRoutes(r *gin.Engine) {
+func SetupFaturaRoutes(r *gin.Engine, faturaController *controllers.FaturaController) {
 	fatura := r.Group("/fatura")
 	{
-		fatura.GET("/pdf", controllers.GerarFaturaPDF)
+		fatura.GET("/pdf", faturaController.GerarPDF)
 	}
 }

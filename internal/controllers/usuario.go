@@ -1,24 +1,36 @@
 package controllers
 
 import (
-	"net/http"
 	"strconv"
-
+	"projeto_go/internal/models"
 	"github.com/gin-gonic/gin"
-	"projeto_go/services"
+	"projeto_go/internal/services"
 )
 
 type UsuarioController struct {
 	service *services.UsuarioService
 }
 
-var nextID = 3
+func NewUsuarioController(service *services.UsuarioService) *UsuarioController {
+	return &UsuarioController{
+		service: service,
+	}
+}
 
 /**
 * GET /usuarios
 */
 func (uc *UsuarioController) GetUsuarios(c *gin.Context) {
-	c.JSON(200, uc.service.GetUsuarios())
+    usuarios, err := uc.service.GetUsuarios()
+    if err != nil {
+        c.JSON(500, gin.H{
+            "error": "Erro ao buscar usuários",
+            "details": err.Error(),
+        })
+        return
+    }
+    
+    c.JSON(200, usuarios)
 }
 
 /**
@@ -31,7 +43,7 @@ func (uc *UsuarioController) GetUsuarioByID(c *gin.Context) {
 		return
 	}
 
-	usuario, err := uc.service.GetUsuarioByID(id)
+	usuario, err := uc.service.GetByID(id)
 	if err != nil {
 		c.JSON(404, gin.H{"error": err.Error()})
 		return
@@ -87,11 +99,11 @@ func (uc *UsuarioController) UpdateUsuario(c *gin.Context) {
 func (uc *UsuarioController) DeleteUsuario(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
-	err := uc.service.DeleteUsuario(id)
+	status, err := uc.service.DeleteUsuario(id)
 	if err != nil {
 		c.JSON(404, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "Usuário removido"})
+	c.JSON(200, gin.H{"message": "Usuário removido", "success": status})
 }

@@ -2,16 +2,16 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"projeto_go/controllers" // Importe seus controllers
+	"projeto_go/internal/controllers" // Importe seus controllers
 )
 
-func SetupUsuarioRoutes(r *gin.Engine) {
+func SetupUsuarioRoutes(r *gin.Engine, usuarioController *controllers.UsuarioController) {
 	usuarios := r.Group("/usuarios")
 	{
-		usuarios.GET("/", controllers.GetUsuarios)        // listar
-		usuarios.GET("/:id", controllers.GetUsuarioByID)  // buscar 1
-		usuarios.POST("/", controllers.CreateUsuario)     // criar
-		usuarios.PUT("/:id", controllers.UpdateUsuario)   // atualizar
-		usuarios.DELETE("/:id", controllers.DeleteUsuario) // deletar
+		usuarios.GET("/", usuarioController.GetUsuarios)        // listar
+		usuarios.GET("/:id", usuarioController.GetUsuarioByID)  // buscar 1
+		usuarios.POST("/", usuarioController.CreateUsuario)     // criar
+		usuarios.PUT("/:id", usuarioController.UpdateUsuario)   // atualizar
+		usuarios.DELETE("/:id", usuarioController.DeleteUsuario) // deletar
 	}
 }

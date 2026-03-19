@@ -11,6 +11,9 @@ import (
     "github.com/gin-gonic/gin"
     "projeto_go/routes"
 	"projeto_go/internal/logger"
+	"projeto_go/internal/controllers"
+	"projeto_go/internal/repositories"
+	"projeto_go/internal/services"
 )
 
 func homeRoute (w http.ResponseWriter, r *http.Request) { 
@@ -49,7 +52,29 @@ func  main () {
 	// Middleware do New Relic (ESSENCIAL)
 	r.Use(nrgin.Middleware(app))
 
-    routes.SetupRoutes(r)
+	// Home Service (sem repo)
+	homeService := services.NewHomeService()
+	homeController := controllers.NewHomeController(homeService)
+
+	usuarioRepo := repositories.NewUsuarioRepository()
+	usuarioService := services.NewUsuarioService(usuarioRepo)
+	usuarioController := controllers.NewUsuarioController(usuarioService)
+
+	// Produto Service
+	produtoRepo := repositories.NewProdutoRepository()
+	produtoService := services.NewProdutoService(produtoRepo)
+	produtoController := controllers.NewProdutoController(produtoService)
+	
+	// Fatura Service (sem repo)
+	faturaService := services.NewFaturaService()
+	faturaController := controllers.NewFaturaController(faturaService)
+
+	routes.SetupRoutes(r, &routes.Controllers{
+		Usuario: usuarioController,
+		Fatura:  faturaController,
+		Produto: produtoController,
+		Home:    homeController,
+	})
 
 	log.Println( "O servidor está rodando na porta 8080" ) 
 	r.Run(":8080")

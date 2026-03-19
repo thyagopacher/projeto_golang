@@ -1,77 +1,45 @@
 package controllers
 
 import (
-	"log"
-	"strings"
-
+	"net/http"
 	"github.com/gin-gonic/gin"
-	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
+	"projeto_go/internal/services"
 )
 
+type FaturaController struct {
+	service *services.FaturaService
+}
+
+func NewFaturaController(service *services.FaturaService) *FaturaController {
+	return &FaturaController{
+		service: service,
+	}
+}
+
+
 /**
- * Controller para gerar fatura em PDF
- * Endpoint: GET /fatura/pdf
- * gera um PDF simples usando wkhtmltopdf
- * @author Thyago Henrique Pacher
- */
-func GerarFaturaPDF(c *gin.Context) {
+* GET /fatura/pdf
+*/
+func (fc *FaturaController) GerarPDF(c *gin.Context) {
+	// Pegar parâmetros da query string
+	nome := c.Query("nome")
+	valor := c.Query("valor")
 
-	// Simulando dados (depois você pode puxar do banco)
-	nome := c.Query("nome") // get parameter 
-	if nome == "" {
-		nome = "Cliente Teste"
-	}	
-	valor := c.Query("valor") // get parameter 
-	if valor == "" {
-		valor = "R$ 199,90"
-	}
-
-	html := `
-	<html>
-	<head>
-		<style>
-			body { font-family: Arial; }
-			.container { padding: 20px; }
-			h1 { color: #333; }
-			.box {
-				border: 1px solid #ccc;
-				padding: 10px;
-				margin-top: 20px;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="container">
-			<h1>Fatura</h1>
-			<div class="box">
-				<p><strong>Cliente:</strong> ` + nome + `</p>
-				<p><strong>Valor:</strong> ` + valor + `</p>
-			</div>
-		</div>
-	</body>
-	</html>
-	`
-
-	pdfg, err := wkhtmltopdf.NewPDFGenerator()
+	// Chamar service para gerar PDF
+	pdfBytes, err := fc.service.GerarPdf(nome, valor)
 	if err != nil {
-		log.Println(err)
-		c.JSON(500, gin.H{"error": "Erro ao criar PDF"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Erro ao gerar PDF",
+			"details": err.Error(),
+		})
 		return
 	}
 
-	page := wkhtmltopdf.NewPageReader(strings.NewReader(html))
-	pdfg.AddPage(page)
-
-	err = pdfg.Create()
-	if err != nil {
-		log.Println(err)
-		c.JSON(500, gin.H{"error": "Erro ao gerar PDF"})
-		return
-	}
-
-	// Headers pra download
+	// Headers para download
 	c.Header("Content-Type", "application/pdf")
 	c.Header("Content-Disposition", "attachment; filename=fatura.pdf")
+	c.Header("Content-Length", string(len(pdfBytes)))
 
-	c.Data(200, "application/pdf", pdfg.Bytes())
+	// Enviar PDF
+	c.Data(http.StatusOK, "application/pdf", pdfBytes)
 }
