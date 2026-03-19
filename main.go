@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 	"github.com/newrelic/go-agent/v3/newrelic"
+	"github.com/newrelic/go-agent/v3/integrations/nrgin"
     "github.com/gin-gonic/gin"
     "projeto_go/routes"
 	"projeto_go/internal/logger"
@@ -44,6 +45,9 @@ func  main () {
 	
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+
+	// Middleware do New Relic (ESSENCIAL)
+	r.Use(nrgin.Middleware(app))
 
     routes.SetupRoutes(r)
 
