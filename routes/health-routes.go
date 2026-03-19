@@ -5,6 +5,6 @@ import (
 	"projeto_go/controllers" // Importe seus controllers
 )
 
-func setupHealthRoutes(r *gin.Engine) {
+func SetupHealthRoutes(r *gin.Engine) {
 	r.GET("/", controllers.HealthCheck)
 }

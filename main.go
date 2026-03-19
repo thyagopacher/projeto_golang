@@ -9,6 +9,7 @@ import (
 	"github.com/newrelic/go-agent/v3/newrelic"
     "github.com/gin-gonic/gin"
     "projeto_go/routes"
+	"projeto_go/internal/logger"
 )
 
 func homeRoute (w http.ResponseWriter, r *http.Request) { 
@@ -16,6 +17,11 @@ func homeRoute (w http.ResponseWriter, r *http.Request) {
 } 
 
 func  main () { 
+
+	logger.SetupLog()
+
+	gin.DefaultWriter = log.Writer()
+	
     app, err := newrelic.NewApplication(
         newrelic.ConfigAppName(os.Getenv("NEW_RELIC_APP_NAME")),
         newrelic.ConfigLicense(os.Getenv("NEW_RELIC_LICENSE_KEY")),
@@ -29,15 +35,18 @@ func  main () {
         log.Println("Warning: New Relic application did not connect:", err)
     }
 
+	
+	log.Println("Iniciando aplicação...")
 	// Gin
 	r := gin.New()
 
 	// Middlewares básicos
+	
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
     routes.SetupRoutes(r)
 
-	fmt.Println( "O servidor está rodando na porta 8080" ) 
+	log.Println( "O servidor está rodando na porta 8080" ) 
 	r.Run(":8080")
 }

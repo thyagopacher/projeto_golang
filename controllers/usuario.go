@@ -5,16 +5,11 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"projeto_go/models"
 )
 
-type Usuario struct {
-	ID   int    `json:"id"`
-	Nome string `json:"nome"`
-	Email string `json:"email"`
-}
-
 // Mock em memória (simples pra exemplo)
-var usuarios = []Usuario{
+var usuarios = []models.Usuario{
 	{ID: 1, Nome: "João", Email: "joao@email.com"},
 	{ID: 2, Nome: "Maria", Email: "maria@email.com"},
 }
@@ -48,7 +43,7 @@ func GetUsuarioByID(c *gin.Context) {
 
 // POST /usuarios
 func CreateUsuario(c *gin.Context) {
-	var novo Usuario
+	var novo models.Usuario
 
 	if err := c.ShouldBindJSON(&novo); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "JSON inválido"})
@@ -73,7 +68,7 @@ func UpdateUsuario(c *gin.Context) {
 		return
 	}
 
-	var atualizado Usuario
+	var atualizado models.Usuario
 
 	if err := c.ShouldBindJSON(&atualizado); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "JSON inválido"})

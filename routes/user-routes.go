@@ -5,7 +5,7 @@ import (
 	"projeto_go/controllers" // Importe seus controllers
 )
 
-func setupUsuarioRoutes(r *gin.Engine) {
+func SetupUsuarioRoutes(r *gin.Engine) {
 	usuarios := r.Group("/usuarios")
 	{
 		usuarios.GET("/", controllers.GetUsuarios)        // listar
