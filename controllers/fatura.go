@@ -8,11 +8,23 @@ import (
 	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
 )
 
+/**
+ * Controller para gerar fatura em PDF
+ * Endpoint: GET /fatura/pdf
+ * gera um PDF simples usando wkhtmltopdf
+ * @author Thyago Henrique Pacher
+ */
 func GerarFaturaPDF(c *gin.Context) {
 
 	// Simulando dados (depois você pode puxar do banco)
-	nome := "Cliente Teste"
-	valor := "R$ 199,90"
+	nome := c.Query("nome") // get parameter 
+	if nome == "" {
+		nome = "Cliente Teste"
+	}	
+	valor := c.Query("valor") // get parameter 
+	if valor == "" {
+		valor = "R$ 199,90"
+	}
 
 	html := `
 	<html>
