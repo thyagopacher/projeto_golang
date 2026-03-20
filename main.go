@@ -14,6 +14,7 @@ import (
 	"projeto_go/internal/controllers"
 	"projeto_go/internal/repositories"
 	"projeto_go/internal/services"
+	"projeto_go/internal/database"
 )
 
 func homeRoute (w http.ResponseWriter, r *http.Request) { 
@@ -41,11 +42,22 @@ func  main () {
 
 	
 	log.Println("Iniciando aplicação...")
+
+	// Conecta ao MongoDB (chame antes de iniciar o servidor)
+	uri := os.Getenv("MONGO_URI")
+	dbName := os.Getenv("MONGO_DB_NAME")
+	if uri == "" || dbName == "" {
+		log.Fatal("MONGO_URI e MONGO_DB_NAME devem estar definidos nas variáveis de ambiente")
+	}
+	if err := database.ConnectMongo(uri, dbName); err != nil {
+		log.Fatalf("Erro ao conectar ao MongoDB: %v", err)
+	}
+	defer database.Disconnect() // garante desconexão no shutdown
+	
 	// Gin
 	r := gin.New()
 
 	// Middlewares básicos
-	
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
