@@ -22,7 +22,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root123
     volumes:
-      - ./mongo_data:/data/db
+      - ./data/mongo_data:/data/db
   redis:
     image: redis:7.2
     container_name: redis
@@ -30,4 +30,4 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - ./redis_data:/data
+      - ./data/redis_data:/data
