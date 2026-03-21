@@ -1,3 +1,4 @@
 .env
 *.log
 mongo_data/*
+redis_data/*

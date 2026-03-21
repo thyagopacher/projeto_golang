@@ -31,12 +31,14 @@ func (s *HomeService) GetHealth() map[string]interface{} {
  */
 func (s *HomeService) GetHome() map[string]interface{} {
 	isMongoConnected := database.IsMongoConnected()
+	isRedisConnected := database.IsRedisConnected()
 
 	return map[string]interface{}{
 		"name":           "Projeto Go API",
 		"description":    "API RESTful em Go com Gin e MongoDB",
 		"version":        "1.0.0",
 		"databaseStatus": isMongoConnected,
+		"redisStatus":    isRedisConnected,
 		"timestamp":      time.Now().Format(time.RFC3339),
 	}
 }

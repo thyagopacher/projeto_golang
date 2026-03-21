@@ -9,6 +9,9 @@ services:
     env_file:
       - .env
     restart: unless-stopped
+    depends_on:
+      - mongodb
+      - redis
   mongodb:
     image: mongo:7.0
     container_name: mongodb
@@ -20,3 +23,11 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: root123
     volumes:
       - ./mongo_data:/data/db
+  redis:
+    image: redis:7.2
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis_data:/data

@@ -54,6 +54,17 @@ func  main () {
 	}
 	defer database.Disconnect() // garante desconexão no shutdown
 	
+	// Conecta ao Redis (chame antes de iniciar o servidor)
+	redisHost := os.Getenv("REDIS_HOST")
+	redisPort := os.Getenv("REDIS_PORT")
+	if redisHost == "" || redisPort == "" {
+		log.Fatal("REDIS_HOST e REDIS_PORT devem estar definidos nas variáveis de ambiente")
+	}
+	if err := database.ConnectRedis(redisHost, redisPort); err != nil {
+		log.Fatalf("Erro ao conectar ao Redis: %v", err)
+	}
+	defer database.DisconnectRedis() // garante desconexão no shutdown
+
 	// Gin
 	r := gin.New()
 
