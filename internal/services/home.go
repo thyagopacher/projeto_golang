@@ -37,14 +37,6 @@ func (s *HomeService) GetHome() map[string]interface{} {
 		"description":    "API RESTful em Go com Gin e MongoDB",
 		"version":        "1.0.0",
 		"databaseStatus": isMongoConnected,
-		"endpoints": []string{
-			"GET /health",
-			"GET /produtos",
-			"GET /produtos/:id",
-			"POST /produtos",
-			"PUT /produtos/:id",
-			"DELETE /produtos/:id",
-		},
-		"timestamp": time.Now().Format(time.RFC3339),
+		"timestamp":      time.Now().Format(time.RFC3339),
 	}
 }
