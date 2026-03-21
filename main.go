@@ -61,7 +61,10 @@ func  main () {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	// Middleware do New Relic (ESSENCIAL)
+	/** 
+	* Middleware do New Relic (ESSENCIAL) 
+	* captura error automaticamente e monitora transações
+	*/
 	r.Use(nrgin.Middleware(app))
 
 	// Home Service (sem repo)

@@ -4,8 +4,10 @@ module projeto_go
 go 1.21
 
 // libs a serem usadas para download
+
 require github.com/newrelic/go-agent/v3 v3.0.0
 
+// monitora transações pela newrelic
 require github.com/newrelic/go-agent/v3/integrations/nrgin v1.0.0
 
 require github.com/gin-gonic/gin v1.8.1

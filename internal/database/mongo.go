@@ -14,8 +14,8 @@ var (
 	DB     *mongo.Database
 	client *mongo.Client
 
-	once     sync.Once
-	initErr  error
+	once      sync.Once
+	initErr   error
 	connected bool
 )
 
@@ -89,4 +89,6 @@ func Disconnect() {
 	connected = false
 	client = nil
 	DB = nil
+
+	once = sync.Once{} // 🔥 reset
 }
