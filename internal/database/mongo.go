@@ -92,3 +92,15 @@ func Disconnect() {
 
 	once = sync.Once{} // 🔥 reset
 }
+
+func IsMongoConnected() bool {
+	if client == nil {
+		return false
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	err := client.Ping(ctx, nil)
+	return err == nil
+}

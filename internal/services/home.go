@@ -1,6 +1,7 @@
 package services
 
 import (
+	"projeto_go/internal/database"
 	"time"
 )
 
@@ -14,7 +15,7 @@ func NewHomeService() *HomeService {
 
 /**
 * GET /health
-*/
+ */
 func (s *HomeService) GetHealth() map[string]interface{} {
 	return map[string]interface{}{
 		"status":    "ok",
@@ -27,12 +28,15 @@ func (s *HomeService) GetHealth() map[string]interface{} {
 
 /**
 * GET / (opcional - página inicial)
-*/
+ */
 func (s *HomeService) GetHome() map[string]interface{} {
+	isMongoConnected := database.IsMongoConnected()
+
 	return map[string]interface{}{
-		"name":        "Projeto Go API",
-		"description": "API RESTful em Go com Gin e MongoDB",
-		"version":     "1.0.0",
+		"name":           "Projeto Go API",
+		"description":    "API RESTful em Go com Gin e MongoDB",
+		"version":        "1.0.0",
+		"databaseStatus": isMongoConnected,
 		"endpoints": []string{
 			"GET /health",
 			"GET /produtos",
