@@ -1,46 +1,40 @@
-package main 
+package main
 
-import ( 
- 	"fmt" 
-	"net/http"
+import (
 	"log"
 	"os"
-	"time"
-	"github.com/newrelic/go-agent/v3/newrelic"
-	"github.com/newrelic/go-agent/v3/integrations/nrgin"
-    "github.com/gin-gonic/gin"
-    "projeto_go/routes"
-	"projeto_go/internal/logger"
 	"projeto_go/internal/controllers"
+	"projeto_go/internal/database"
+	"projeto_go/internal/logger"
 	"projeto_go/internal/repositories"
 	"projeto_go/internal/services"
-	"projeto_go/internal/database"
+	"projeto_go/routes"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/newrelic/go-agent/v3/integrations/nrgin"
+	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
-func homeRoute (w http.ResponseWriter, r *http.Request) { 
-	fmt.Fprintf(w, "Olá, aplicação Go em Docker!" ) 
-} 
-
-func  main () { 
+func main() {
 
 	logger.SetupLog()
 
 	gin.DefaultWriter = log.Writer()
-	
-    app, err := newrelic.NewApplication(
-        newrelic.ConfigAppName(os.Getenv("NEW_RELIC_APP_NAME")),
-        newrelic.ConfigLicense(os.Getenv("NEW_RELIC_LICENSE_KEY")),
-    )
-    if err != nil {
-        log.Fatal("Failed to create New Relic application:", err)
-    }
 
-    // Wait for the application to connect
-    if err := app.WaitForConnection(5 * time.Second); err != nil {
-        log.Println("Warning: New Relic application did not connect:", err)
-    }
+	app, err := newrelic.NewApplication(
+		newrelic.ConfigAppName(os.Getenv("NEW_RELIC_APP_NAME")),
+		newrelic.ConfigLicense(os.Getenv("NEW_RELIC_LICENSE_KEY")),
+	)
+	if err != nil {
+		log.Fatal("Failed to create New Relic application:", err)
+	}
 
-	
+	// Wait for the application to connect
+	if err := app.WaitForConnection(5 * time.Second); err != nil {
+		log.Println("Warning: New Relic application did not connect:", err)
+	}
+
 	log.Println("Iniciando aplicação...")
 
 	// Conecta ao MongoDB (chame antes de iniciar o servidor)
@@ -53,7 +47,7 @@ func  main () {
 		log.Fatalf("Erro ao conectar ao MongoDB: %v", err)
 	}
 	defer database.Disconnect() // garante desconexão no shutdown
-	
+
 	// Conecta ao Redis (chame antes de iniciar o servidor)
 	redisHost := os.Getenv("REDIS_HOST")
 	redisPort := os.Getenv("REDIS_PORT")
@@ -72,10 +66,10 @@ func  main () {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	/** 
-	* Middleware do New Relic (ESSENCIAL) 
+	/**
+	* Middleware do New Relic (ESSENCIAL)
 	* captura error automaticamente e monitora transações
-	*/
+	 */
 	r.Use(nrgin.Middleware(app))
 
 	// Home Service (sem repo)
@@ -90,7 +84,7 @@ func  main () {
 	produtoRepo := repositories.NewProdutoRepository()
 	produtoService := services.NewProdutoService(produtoRepo)
 	produtoController := controllers.NewProdutoController(produtoService)
-	
+
 	// Fatura Service (sem repo)
 	faturaService := services.NewFaturaService()
 	faturaController := controllers.NewFaturaController(faturaService)
@@ -102,6 +96,6 @@ func  main () {
 		Home:    homeController,
 	})
 
-	log.Println( "O servidor está rodando na porta 8080" ) 
+	log.Println("O servidor está rodando na porta 8080")
 	r.Run(":8080")
 }
