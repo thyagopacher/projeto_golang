@@ -1,3 +1,9 @@
+## 📬 Postman Collection
+
+A collection do Postman está disponível em:
+
+[Download da Collection](docs/postman_collection.json)
+
 ## BUILD
 ```
 docker compose up -d 
