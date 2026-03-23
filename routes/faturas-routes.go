@@ -5,8 +5,8 @@ import (
 	"projeto_go/internal/controllers"
 )
 
-func SetupFaturaRoutes(r *gin.Engine, faturaController *controllers.FaturaController) {
-	fatura := r.Group("/fatura")
+func SetupFaturaRoutes(rg *gin.RouterGroup, faturaController *controllers.FaturaController) {
+	fatura := rg.Group("/fatura")
 	{
 		fatura.GET("/pdf", faturaController.GerarPDF)
 	}

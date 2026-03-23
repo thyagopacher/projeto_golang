@@ -5,8 +5,8 @@ import (
 	"projeto_go/internal/controllers" // Importe seus controllers
 )
 
-func SetupProdutoRoutes(r *gin.Engine, ProdutoController *controllers.ProdutoController) {
-	Produtos := r.Group("/Produtos")
+func SetupProdutoRoutes(rg *gin.RouterGroup, ProdutoController *controllers.ProdutoController) {
+	Produtos := rg.Group("/Produtos")
 	{
 		Produtos.GET("/", ProdutoController.GetProdutos)        // listar
 		Produtos.GET("/:id", ProdutoController.GetProdutoByID)  // buscar 1

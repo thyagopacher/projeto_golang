@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"crypto/rsa"
+	"fmt"
 	"projeto_go/internal/auth"
 	"strings"
 
@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func JWTMiddleware(verifyKey *rsa.PublicKey) gin.HandlerFunc {
+func JWTMiddleware(secretKey []byte) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 
@@ -28,7 +28,13 @@ func JWTMiddleware(verifyKey *rsa.PublicKey) gin.HandlerFunc {
 		tokenString := parts[1]
 
 		token, err := jwt.ParseWithClaims(tokenString, &auth.CustomClaims{}, func(token *jwt.Token) (any, error) {
-			return verifyKey, nil
+
+			// 🔐 valida se é HS256
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("algoritmo inválido")
+			}
+
+			return secretKey, nil
 		})
 
 		if err != nil || !token.Valid {

@@ -16,11 +16,20 @@ http://localhost:8080/
 ## Testes unitários
 go test -v ./tests
 
+## ERRO para autenticação em rotas que usam JWT
+-É necessário gerar o token antes no endpoint `/api/auth/login` 
+```json
+{
+    "error": "Token não informado"
+}
+```
+
 ## Rotas exemplo de uso para Curl:
 
 1 - Cadastro de usuários
-```
-curl -X POST http://localhost:8080/usuarios/ \
+
+```shell
+curl -X POST http://localhost:8080/api/usuarios/ \
   -H "Content-Type: application/json" \
   -d '{
     "nome": "Ana",
@@ -28,6 +37,28 @@ curl -X POST http://localhost:8080/usuarios/ \
     "ativo": true
   }'
 ```
+-retorno OK:
+```json
+[
+    {
+        "id": 1,
+        "nome": "Thyago",
+        "email": "thyago@email.com",
+        "ativo": true,
+        "data_criacao": "2026-03-20T10:19:20.498Z",
+        "data_atualizacao": "2026-03-20T10:19:20.498Z"
+    },
+    {
+        "id": 2,
+        "nome": "Ana",
+        "email": "Ana@email.com",
+        "ativo": true,
+        "data_criacao": "2026-03-20T10:19:38.954Z",
+        "data_atualizacao": "2026-03-20T10:19:38.954Z"
+    }
+]
+```
+--------------------------------------------------
 
 2 - Gerando de auth JWT
 ```
