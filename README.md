@@ -9,6 +9,7 @@ docker run --rm -v $(pwd):/app -w /app golang:1.21 go mod tidy;
 ```
 
 ## Rodar 
+-URL para servir o projeto:
 http://localhost:8080/
 
 
@@ -16,7 +17,8 @@ http://localhost:8080/
 go test -v ./tests
 
 ## Rotas exemplo de uso para Curl:
-Cadastro de usuários
+
+1 - Cadastro de usuários
 ```
 curl -X POST http://localhost:8080/usuarios/ \
   -H "Content-Type: application/json" \
@@ -25,4 +27,11 @@ curl -X POST http://localhost:8080/usuarios/ \
     "email": "Ana@email.com",
     "ativo": true
   }'
+```
+
+2 - Gerando de auth JWT
+```
+curl -X POST 'http://localhost:8080/api/auth/login' \
+  --header 'Content-Type: application/json' \
+  --body '{"user":"test","pass":"known"}'
 ```
