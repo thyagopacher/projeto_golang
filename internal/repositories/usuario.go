@@ -2,9 +2,10 @@ package repositories
 
 import (
 	"context"
-	"time"
 	"projeto_go/internal/database" // importe seu pacote de conexão
 	"projeto_go/internal/models"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -127,7 +128,7 @@ func (r *UsuarioRepository) Update(id int, usuario models.Usuario) (models.Usuar
 func (r *UsuarioRepository) Delete(id int) (bool, error) {
 	ctx := context.Background()
 
-	result, err := r.collection.DeleteOne(ctx, bson.M{"_id": id})
+	result, err := r.collection.DeleteOne(ctx, bson.M{"id": id})
 	if err != nil {
 		return false, err
 	}
