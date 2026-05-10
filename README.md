@@ -1,3 +1,6 @@
+Peojeto exemplo padrão mínimo para uso com a linguagem de programação Go-lang, está com fácil utilização e até vinculado a docker para testes locais e na estrutura está com padrão MVC (model-view-controller)
+
+
 ## 📬 Postman Collection
 
 A collection do Postman está disponível em:
